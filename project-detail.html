@@ -249,8 +249,8 @@
                     "./作品集/逆水寒_四方行舟/1.jpg",
                     "./作品集/逆水寒_四方行舟/2.jpg",
                     "./作品集/逆水寒_四方行舟/3.jpg",
-                    "./作品集/逆水寒_四方行舟/4.jpg",
-                    "./作品集/逆水寒_四方行舟/5.jpg"
+                    // 最后两张图片并排显示（small模式）
+                    ["./作品集/逆水寒_四方行舟/4.jpg", "./作品集/逆水寒_四方行舟/5.jpg"]
                 ]
             },
             14: {
@@ -352,34 +352,61 @@
                     {/* 图片展示区 - 垂直排列 */}
                     <div className="px-6 md:px-20 pb-20">
                         <div className="max-w-6xl mx-auto space-y-12">
-                            {project.images.map((img, idx) => (
-                                <motion.div
-                                    key={idx}
-                                    initial={{ opacity: 0, y: 50 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true, margin: "-10%" }}
-                                    transition={{ duration: 0.6, delay: idx * 0.1 }}
-                                    className="relative overflow-hidden rounded-lg shadow-lg"
-                                >
-                                    {img.endsWith('.mp4') ? (
-                                        <video 
-                                            controls 
-                                            preload="metadata"
-                                            className="w-full h-auto object-contain"
-                                            style={{ minHeight: '400px', backgroundColor: '#000' }}
+                            {project.images.map((img, idx) => {
+                                // 检查是否为数组（并排显示）
+                                if (Array.isArray(img)) {
+                                    return (
+                                        <motion.div
+                                            key={idx}
+                                            initial={{ opacity: 0, y: 50 }}
+                                            whileInView={{ opacity: 1, y: 0 }}
+                                            viewport={{ once: true, margin: "-10%" }}
+                                            transition={{ duration: 0.6, delay: idx * 0.1 }}
+                                            className="grid grid-cols-2 gap-6"
                                         >
-                                            <source src={img} type="video/mp4" />
-                                            Your browser does not support the video tag.
-                                        </video>
-                                    ) : (
-                                        <img
-                                            src={img}
-                                            alt={`${project.title} - ${idx + 1}`}
-                                            className="w-full h-auto object-contain"
-                                        />
-                                    )}
-                                </motion.div>
-                            ))}
+                                            {img.map((subImg, subIdx) => (
+                                                <div key={subIdx} className="relative overflow-hidden rounded-lg shadow-lg">
+                                                    <img
+                                                        src={subImg}
+                                                        alt={`${project.title} - ${idx + 1}-${subIdx + 1}`}
+                                                        className="w-full h-auto object-contain"
+                                                    />
+                                                </div>
+                                            ))}
+                                        </motion.div>
+                                    );
+                                }
+                                
+                                // 单张图片（正常显示）
+                                return (
+                                    <motion.div
+                                        key={idx}
+                                        initial={{ opacity: 0, y: 50 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true, margin: "-10%" }}
+                                        transition={{ duration: 0.6, delay: idx * 0.1 }}
+                                        className="relative overflow-hidden rounded-lg shadow-lg"
+                                    >
+                                        {img.endsWith('.mp4') ? (
+                                            <video 
+                                                controls 
+                                                preload="metadata"
+                                                className="w-full h-auto object-contain"
+                                                style={{ minHeight: '400px', backgroundColor: '#000' }}
+                                            >
+                                                <source src={img} type="video/mp4" />
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        ) : (
+                                            <img
+                                                src={img}
+                                                alt={`${project.title} - ${idx + 1}`}
+                                                className="w-full h-auto object-contain"
+                                            />
+                                        )}
+                                    </motion.div>
+                                );
+                            })}
                         </div>
 
                         {/* 外部链接按钮 */}

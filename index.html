@@ -446,10 +446,11 @@
                                         onMouseEnter={textEnter}
                                         onMouseLeave={textLeave}
                                     >
-                                        <div className="relative overflow-hidden rounded-lg shadow-lg mb-4 aspect-[4/3]">
+                                        <div className="relative overflow-hidden rounded-lg shadow-lg mb-4 aspect-[4/3] bg-gray-100">
                                             <img
                                                 src={project.image}
                                                 alt={project.title}
+                                                loading="lazy"
                                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                             />
                                             <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
@@ -716,7 +717,7 @@
                                     onMouseLeave={textLeave}
                                 >
                                     {/* 这里放个人照片 */}
-                                    <img src="portrait.jpg" alt="Yichen Chen" className="object-cover w-full h-full" />
+                                    <img src="portrait.jpg" alt="Yichen Chen" loading="lazy" className="object-cover w-full h-full" />
                                 </motion.div>
                             </div>
                         </div>

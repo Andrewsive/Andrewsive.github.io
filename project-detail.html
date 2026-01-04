@@ -365,11 +365,13 @@
                                             className="grid grid-cols-2 gap-6"
                                         >
                                             {img.map((subImg, subIdx) => (
-                                                <div key={subIdx} className="relative overflow-hidden rounded-lg shadow-lg">
+                                                <div key={subIdx} className="relative overflow-hidden rounded-lg shadow-lg bg-gray-100">
                                                     <img
                                                         src={subImg}
                                                         alt={`${project.title} - ${idx + 1}-${subIdx + 1}`}
+                                                        loading="lazy"
                                                         className="w-full h-auto object-contain"
+                                                        style={{ minHeight: '300px' }}
                                                     />
                                                 </div>
                                             ))}
@@ -401,7 +403,9 @@
                                             <img
                                                 src={img}
                                                 alt={`${project.title} - ${idx + 1}`}
+                                                loading="lazy"
                                                 className="w-full h-auto object-contain"
+                                                style={{ minHeight: '400px', backgroundColor: '#f3f4f6' }}
                                             />
                                         )}
                                     </motion.div>

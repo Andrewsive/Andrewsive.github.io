@@ -92,6 +92,155 @@
             height: 50px;
             background-color: #fff;
         }
+
+        /* 页面加载动画 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 文字渐变动画 */
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .gradient-text {
+            background: linear-gradient(45deg, #111, #666, #111, #999);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient 8s ease infinite;
+        }
+
+        /* 3D卡片效果 */
+        .card-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+        }
+
+        .card-3d:hover {
+            transform: scale(1.02);
+        }
+
+        /* 磁吸效果 */
+        .magnetic {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* 粒子背景 */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.6;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ddd;
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+
+        /* 图片悬停效果 */
+        .image-hover-effect {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-hover-effect::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+            z-index: 1;
+        }
+
+        .image-hover-effect:hover::before {
+            left: 100%;
+        }
+
+        /* 平滑滚动 */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* 脉冲动画 */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* 浮动动画 */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* 发光效果 */
+        .glow-effect {
+            transition: box-shadow 0.3s ease;
+        }
+
+        .glow-effect:hover {
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 旋转效果 */
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 视差效果辅助类 */
+        .parallax {
+            transition: transform 0.3s ease-out;
+        }
     </style>
 </head>
 <body>
@@ -226,7 +375,7 @@
                 detailImages: [
                     "./作品集/VISTA/Frame 6.jpg",
                     "./作品集/VISTA/Future Intelligent Mobility.png",
-                    "./作品集/VISTA/video.mp4"
+                    "./作品集/VISTA/redpandacompress_视频.mp4"
                 ]
             },
             {
@@ -335,6 +484,9 @@
         const App = () => {
             const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
             const [cursorVariant, setCursorVariant] = useState("default");
+            const [scrollDirection, setScrollDirection] = useState("up");
+            const [lastScrollY, setLastScrollY] = useState(0);
+            const [navVisible, setNavVisible] = useState(true);
             
             // 鼠标跟随逻辑
             useEffect(() => {
@@ -345,6 +497,42 @@
                 return () => window.removeEventListener("mousemove", mouseMove);
             }, []);
 
+            // 导航栏始终可见（不再智能隐藏）
+            // 保持 navVisible 始终为 true
+
+            // 页面加载时滚动到指定作品位置
+            useEffect(() => {
+                const hash = window.location.hash;
+                if (hash && hash.startsWith('#project-')) {
+                    setTimeout(() => {
+                        const element = document.querySelector(hash);
+                        if (element) {
+                            const yOffset = -100;
+                            const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                            window.scrollTo({ top: y, behavior: 'smooth' });
+                        }
+                    }, 500);
+                }
+            }, []);
+
+            // 粒子背景效果
+            useEffect(() => {
+                const particlesContainer = document.querySelector('.particles');
+                if (!particlesContainer) return;
+
+                const particleCount = 30;
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.top = Math.random() * 100 + '%';
+                    particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    particle.style.animationDelay = Math.random() * 2 + 's';
+                    particle.style.animation = `float ${Math.random() * 3 + 2}s ease-in-out infinite`;
+                    particlesContainer.appendChild(particle);
+                }
+            }, []);
+
             const textEnter = () => setCursorVariant("hovered");
             const textLeave = () => setCursorVariant("default");
 
@@ -352,9 +540,34 @@
             const { scrollYProgress } = useScroll();
             const yRange = useTransform(scrollYProgress, [0, 1], [0, -50]);
 
+            // 3D卡片倾斜效果
+            const handleCardMouseMove = (e, ref) => {
+                if (!ref.current) return;
+                const card = ref.current;
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+                
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+            };
+
+            const handleCardMouseLeave = (ref) => {
+                if (!ref.current) return;
+                ref.current.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+            };
+
             return (
                 <div className="relative min-h-screen bg-[#f9f9f9] text-[#111] overflow-hidden">
                     <div className="noise-bg"></div>
+                    
+                    {/* 粒子背景 */}
+                    <div className="particles"></div>
                     
                     {/* 自定义鼠标 */}
                     <motion.div 
@@ -363,8 +576,13 @@
                         transition={{ type: "spring", stiffness: 500, damping: 28, mass: 0.5 }}
                     />
 
-                    {/* 导航栏 */}
-                    <nav className="fixed top-0 w-full p-8 flex justify-between items-center z-40 mix-blend-difference text-white">
+                    {/* 导航栏 - 智能隐藏 */}
+                    <motion.nav 
+                        className="fixed top-0 w-full p-8 flex justify-between items-center z-40 mix-blend-difference text-white backdrop-blur-sm"
+                        initial={{ y: 0 }}
+                        animate={{ y: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                    >
                         <motion.div 
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -380,12 +598,48 @@
                             transition={{ duration: 0.8, delay: 0.1 }}
                             className="hidden md:flex space-x-8 text-sm uppercase tracking-widest"
                         >
-                            <a href="#work" className="transition-all" onMouseEnter={textEnter} onMouseLeave={textLeave}>Work</a>
-                            <a href="#project" className="transition-all" onMouseEnter={textEnter} onMouseLeave={textLeave}>Project</a>
-                            <a href="#about" className="transition-all" onMouseEnter={textEnter} onMouseLeave={textLeave}>Profile</a>
-                            <a href="#contact" className="transition-all" onMouseEnter={textEnter} onMouseLeave={textLeave}>Contact</a>
+                            <motion.a 
+                                href="#work" 
+                                className="transition-all hover:scale-110" 
+                                onMouseEnter={textEnter} 
+                                onMouseLeave={textLeave}
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                Work
+                            </motion.a>
+                            <motion.a 
+                                href="#project" 
+                                className="transition-all hover:scale-110" 
+                                onMouseEnter={textEnter} 
+                                onMouseLeave={textLeave}
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                Project
+                            </motion.a>
+                            <motion.a 
+                                href="#about" 
+                                className="transition-all hover:scale-110" 
+                                onMouseEnter={textEnter} 
+                                onMouseLeave={textLeave}
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                Profile
+                            </motion.a>
+                            <motion.a 
+                                href="#contact" 
+                                className="transition-all hover:scale-110" 
+                                onMouseEnter={textEnter} 
+                                onMouseLeave={textLeave}
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                Contact
+                            </motion.a>
                         </motion.div>
-                    </nav>
+                    </motion.nav>
 
                     {/* Hero Section */}
                     <header className="h-screen flex flex-col justify-center px-6 md:px-20 relative pt-20">
@@ -395,26 +649,48 @@
                             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
                             className="relative z-10"
                         >
-                            <h1 className="text-[12vw] leading-[1.1] font-serif italic tracking-tight" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+                            <motion.h1 
+                                className="text-[12vw] leading-[1.1] font-serif italic tracking-tight gradient-text" 
+                                onMouseEnter={textEnter} 
+                                onMouseLeave={textLeave}
+                                initial={{ opacity: 0, x: -50 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.8, delay: 0.2 }}
+                            >
                                 Innovative
-                            </h1>
+                            </motion.h1>
                             <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-24">
-                                <h1 className="text-[12vw] leading-[1.1] font-bold tracking-tighter" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+                                <motion.h1 
+                                    className="text-[12vw] leading-[1.1] font-bold tracking-tighter" 
+                                    onMouseEnter={textEnter} 
+                                    onMouseLeave={textLeave}
+                                    initial={{ opacity: 0, x: 50 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ duration: 0.8, delay: 0.4 }}
+                                    whileHover={{ scale: 1.05, transition: { duration: 0.3 } }}
+                                >
                                     Strategist
-                                </h1>
-                                <p className="mt-4 md:mt-8 text-sm md:text-base max-w-md leading-relaxed text-gray-600 font-sans md:ml-12">
+                                </motion.h1>
+                                <motion.p 
+                                    className="mt-4 md:mt-8 text-sm md:text-base max-w-md leading-relaxed text-gray-600 font-sans md:ml-12"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.8, delay: 0.6 }}
+                                >
                                     Exploring the future of human-centered interaction through AIGC, service innovation, and user-centric problem solving.
                                     <br/><br/>
                                     <span className="block text-black font-semibold whitespace-nowrap">Based in Hangzhou / Available Worldwide</span>
-                                </p>
+                                </motion.p>
                             </div>
                         </motion.div>
 
                         <motion.div 
-                            className="absolute bottom-10 left-6 md:left-20 animate-bounce"
+                            className="absolute bottom-10 left-6 md:left-20 float-animation"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 1.5 }}
+                            onMouseEnter={textEnter}
+                            onMouseLeave={textLeave}
                         >
                             <ArrowDown size={24} className="opacity-50" />
                         </motion.div>
@@ -422,9 +698,15 @@
 
                     {/* 横向滚动作品展示 */}
                     <section className="py-20 bg-white relative z-20 overflow-hidden">
-                        <div className="px-6 md:px-20 mb-12">
+                        <motion.div 
+                            className="px-6 md:px-20 mb-12"
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8 }}
+                        >
                             <h2 className="text-3xl md:text-5xl font-serif italic">Featured Projects</h2>
-                        </div>
+                        </motion.div>
                         <div className="relative">
                             <div 
                                 className="flex gap-8 px-6 md:px-20 overflow-x-auto pb-8 scrollbar-hide"
@@ -438,25 +720,53 @@
                                     <motion.a
                                         key={project.id}
                                         href={project.detailImages ? `./project-detail.html?id=${project.id}` : '#'}
-                                        initial={{ opacity: 0, x: 50 }}
-                                        whileInView={{ opacity: 1, x: 0 }}
+                                        initial={{ opacity: 0, x: 50, rotateY: -15 }}
+                                        whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
                                         viewport={{ once: true }}
-                                        transition={{ duration: 0.6, delay: index * 0.1 }}
+                                        transition={{ duration: 0.6, delay: index * 0.05 }}
+                                        whileHover={{ 
+                                            y: -10, 
+                                            scale: 1.02,
+                                            transition: { duration: 0.3 }
+                                        }}
                                         className="flex-shrink-0 w-80 md:w-96 group cursor-pointer"
                                         onMouseEnter={textEnter}
                                         onMouseLeave={textLeave}
                                     >
-                                        <div className="relative overflow-hidden rounded-lg shadow-lg mb-4 aspect-[4/3] bg-gray-100">
-                                            <img
+                                        <div className="relative overflow-hidden rounded-lg shadow-lg mb-4 aspect-[4/3] bg-gray-100 image-hover-effect glow-effect">
+                                            <motion.img
                                                 src={project.image}
                                                 alt={project.title}
                                                 loading="lazy"
-                                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                className="w-full h-full object-cover"
+                                                whileHover={{ scale: 1.1 }}
+                                                transition={{ duration: 0.6, ease: "easeOut" }}
                                             />
-                                            <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
+                                            <motion.div 
+                                                className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"
+                                                initial={{ opacity: 0 }}
+                                                whileHover={{ opacity: 1 }}
+                                                transition={{ duration: 0.3 }}
+                                            >
+                                                <div className="absolute bottom-4 left-4 right-4">
+                                                    <motion.div
+                                                        initial={{ y: 20, opacity: 0 }}
+                                                        whileHover={{ y: 0, opacity: 1 }}
+                                                        className="text-white text-sm font-medium"
+                                                    >
+                                                        View Project →
+                                                    </motion.div>
+                                                </div>
+                                            </motion.div>
                                         </div>
                                         <div className="px-2">
-                                            <h3 className="text-xl font-semibold mb-2 group-hover:text-gray-600 transition-colors">{project.title}</h3>
+                                            <motion.h3 
+                                                className="text-xl font-semibold mb-2 group-hover:text-gray-600 transition-colors"
+                                                whileHover={{ x: 5 }}
+                                                transition={{ duration: 0.2 }}
+                                            >
+                                                {project.title}
+                                            </motion.h3>
                                             <div className="flex items-center gap-3 text-sm text-gray-500">
                                                 <span className="uppercase tracking-wider">{project.category}</span>
                                                 <span>·</span>
@@ -466,64 +776,141 @@
                                     </motion.a>
                                 ))}
                             </div>
-                            {/* 滚动提示 */}
-                            <div className="absolute right-0 top-0 bottom-8 w-32 bg-gradient-to-l from-white to-transparent pointer-events-none"></div>
+                            {/* 滚动提示 - 脉冲动画 */}
+                            <div className="absolute right-0 top-0 bottom-8 w-32 bg-gradient-to-l from-white to-transparent pointer-events-none pulse-animation"></div>
                         </div>
                     </section>
 
                     {/* 作品集展示 (Masonry / Grid) */}
                     <section id="work" className="px-6 md:px-20 py-20 bg-white relative z-20">
-                        <div className="mb-20 flex items-end justify-between border-b border-gray-200 pb-8">
+                        <motion.div 
+                            className="mb-20 flex items-end justify-between border-b border-gray-200 pb-8"
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8 }}
+                        >
                             <h2 className="text-4xl md:text-6xl font-serif italic">Selected Works</h2>
-                            <span className="text-sm uppercase tracking-widest hidden md:block">(2023 — Present)</span>
-                        </div>
+                            <motion.span 
+                                className="text-sm uppercase tracking-widest hidden md:block"
+                                initial={{ opacity: 0 }}
+                                whileInView={{ opacity: 1 }}
+                                transition={{ delay: 0.3 }}
+                            >
+                                (2023 — Present)
+                            </motion.span>
+                        </motion.div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-24">
-                            {projects.map((project, index) => (
-                                <motion.div 
-                                    key={project.id}
-                                    initial={{ opacity: 0, y: 50 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true, margin: "-10%" }}
-                                    transition={{ duration: 0.8, delay: index * 0.1 }}
-                                    className={`${project.size === 'large' ? 'md:col-span-2' : 'md:col-span-1'} group cursor-pointer`}
-                                    onMouseEnter={textEnter}
-                                    onMouseLeave={textLeave}
-                                >
-                                    <a href={project.detailImages ? `./project-detail.html?id=${project.id}` : '#'}>
-                                    <div className="overflow-hidden relative mb-6">
-                                        <motion.img 
-                                            src={project.image} 
-                                            alt={project.title}
-                                            className="w-full h-[60vh] md:h-[80vh] object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                                        />
-                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500"></div>
-                                    </div>
-                                    
-                                    <div className="flex justify-between items-start border-t border-gray-900 pt-4">
-                                        <div>
-                                            <h3 className="text-2xl md:text-3xl font-medium mb-1 group-hover:italic transition-all duration-300">{project.title}</h3>
-                                            <p className="text-sm text-gray-500">{project.category}</p>
+                            {projects.map((project, index) => {
+                                const cardRef = React.createRef();
+                                return (
+                                    <motion.div 
+                                        key={project.id}
+                                        id={`project-${project.id}`}
+                                        ref={cardRef}
+                                        initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                                        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                                        viewport={{ once: true, margin: "-10%" }}
+                                        transition={{ 
+                                            duration: 0.8, 
+                                            delay: index * 0.05,
+                                            ease: [0.22, 1, 0.36, 1]
+                                        }}
+                                        className={`${project.size === 'large' ? 'md:col-span-2' : 'md:col-span-1'} group cursor-pointer card-3d`}
+                                        onMouseEnter={textEnter}
+                                        onMouseLeave={textLeave}
+                                        onMouseMove={(e) => handleCardMouseMove(e, cardRef)}
+                                        onMouseOut={() => handleCardMouseLeave(cardRef)}
+                                        whileHover={{ 
+                                            transition: { duration: 0.3 }
+                                        }}
+                                    >
+                                        <a href={project.detailImages ? `./project-detail.html?id=${project.id}` : '#'}>
+                                        <motion.div 
+                                            className="overflow-hidden relative mb-6 rounded-lg glow-effect image-hover-effect"
+                                            whileHover={{ scale: 1.02 }}
+                                            transition={{ duration: 0.5, ease: "easeOut" }}
+                                        >
+                                            <motion.img 
+                                                src={project.image} 
+                                                alt={project.title}
+                                                className="w-full h-[60vh] md:h-[80vh] object-cover"
+                                                initial={{ scale: 1.1 }}
+                                                whileInView={{ scale: 1 }}
+                                                transition={{ duration: 1.2, ease: "easeOut" }}
+                                            />
+                                            <motion.div 
+                                                className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"
+                                                initial={{ opacity: 0 }}
+                                                whileHover={{ opacity: 1 }}
+                                                transition={{ duration: 0.3 }}
+                                            />
+                                            <motion.div
+                                                className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold"
+                                                initial={{ opacity: 0, x: 20 }}
+                                                whileHover={{ opacity: 1, x: 0 }}
+                                                transition={{ duration: 0.3 }}
+                                            >
+                                                {project.year}
+                                            </motion.div>
+                                        </motion.div>
+                                        
+                                        <div className="flex justify-between items-start border-t border-gray-900 pt-4">
+                                            <div>
+                                                <motion.h3 
+                                                    className="text-2xl md:text-3xl font-medium mb-1 group-hover:italic transition-all duration-300"
+                                                    whileHover={{ x: 5, color: "#666" }}
+                                                    transition={{ duration: 0.2 }}
+                                                >
+                                                    {project.title}
+                                                </motion.h3>
+                                                <p className="text-sm text-gray-500">{project.category}</p>
+                                            </div>
+                                            <motion.div 
+                                                className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                                initial={{ x: -10 }}
+                                                whileHover={{ x: 0 }}
+                                            >
+                                                <span className="text-sm font-semibold">View Case</span>
+                                                <motion.div
+                                                    animate={{ x: [0, 5, 0] }}
+                                                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                                                >
+                                                    <ArrowRight size={16} />
+                                                </motion.div>
+                                            </motion.div>
                                         </div>
-                                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-x-[-10px] group-hover:translate-x-0">
-                                            <span className="text-sm font-semibold">View Case</span>
-                                            <ArrowRight size={16} />
-                                        </div>
-                                    </div>
-                                    </a>
-                                </motion.div>
-                            ))}
+                                        </a>
+                                    </motion.div>
+                                );
+                            })}
                         </div>
                     </section>
 
                     {/* Project Experience Section - Editorial Year Style */}
-                    <section id="project" className="px-6 md:px-20 py-40 bg-[#f4f4f0]">
+                    <section id="project" className="px-6 md:px-20 py-40 bg-[#f4f4f0] relative overflow-visible">
+                        {/* 装饰性背景元素 */}
+                        <motion.div
+                            className="absolute top-20 right-10 w-64 h-64 bg-gradient-to-br from-gray-200 to-transparent rounded-full opacity-20 blur-3xl"
+                            animate={{ 
+                                scale: [1, 1.2, 1],
+                                rotate: [0, 180, 360]
+                            }}
+                            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                        />
+                        
                         <div className="flex flex-col md:flex-row justify-between items-start mb-32">
                             <motion.h2 
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
+                                initial={{ opacity: 0, y: 30, x: -30 }}
+                                whileInView={{ opacity: 1, y: 0, x: 0 }}
                                 viewport={{ once: true }}
+                                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                                 className="text-6xl md:text-8xl font-serif mb-8 md:mb-0"
+                                whileHover={{ 
+                                    scale: 1.05,
+                                    transition: { duration: 0.3 }
+                                }}
                             >
                                 Experience
                             </motion.h2>
@@ -531,26 +918,44 @@
                                 initial={{ opacity: 0, y: 30 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                transition={{ delay: 0.2 }}
+                                transition={{ delay: 0.2, duration: 0.8 }}
                                 className="max-w-md text-gray-500 text-sm leading-relaxed md:pt-4"
                             >
                                 Exploring the boundaries of digital interaction and brand storytelling. A collection of selected works that define my journey in design and innovation.
                             </motion.p>
                         </div>
 
-                        <div className="border-t border-gray-300">
+                        <div className="border-t border-gray-300 overflow-visible">
                             {/* Item 1 - 2025 */}
                             <motion.div 
                                 initial={{ opacity: 0, y: 50 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                transition={{ duration: 0.8 }}
-                                className="group border-b border-gray-300 py-20 flex flex-col md:flex-row gap-12 md:gap-32 items-start hover:bg-[#ebebe7] transition-colors duration-500 -mx-6 px-6 md:-mx-20 md:px-20"
+                                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                                className="group border-b border-gray-300 py-20 flex flex-col md:flex-row gap-12 md:gap-32 items-start hover:bg-[#ebebe7] transition-colors duration-500 -mx-6 px-6 md:-mx-20 md:px-20 cursor-pointer"
+                                whileHover={{ 
+                                    backgroundColor: "#ebebe7",
+                                    transition: { duration: 0.3 }
+                                }}
+                                onMouseEnter={textEnter}
+                                onMouseLeave={textLeave}
                             >
-                                <div className="w-full md:w-1/3">
-                                    <span className="text-[8rem] md:text-[11rem] leading-[0.8] font-serif tracking-tight group-hover:italic transition-all duration-500 block">2025</span>
-                                </div>
-                                <div className="w-full md:w-2/3 flex flex-col gap-8 pt-4">
+                                <motion.div 
+                                    className="w-full md:w-auto md:flex-shrink-0 overflow-visible"
+                                    whileHover={{ scale: 1.05 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    <motion.span 
+                                        className="text-[8rem] md:text-[11rem] leading-tight font-serif tracking-tight group-hover:italic transition-all duration-500 inline-block gradient-text whitespace-nowrap pr-28 pb-4"
+                                        whileHover={{ 
+                                            rotate: [-2, 2, -2, 0],
+                                            transition: { duration: 0.5 }
+                                        }}
+                                    >
+                                        2025
+                                    </motion.span>
+                                </motion.div>
+                                <div className="w-full md:flex-1 flex flex-col gap-8 pt-4">
                                     <div>
                                         <h3 className="text-xl font-serif mb-3 text-black">HarmonyOS App Development</h3>
                                         <p className="text-gray-500 text-sm mb-2">Nov 2025</p>
@@ -567,7 +972,7 @@
                                     </div>
                                     <div>
                                         <h3 className="text-xl font-serif mb-3 text-black">
-                                            <a href="https://github.com/bmh201708/HapticDroneDemo.git" target="_blank" rel="noopener noreferrer" className="text-amber-700 hover:text-amber-900 underline decoration-1 underline-offset-2 transition-colors duration-200">Information and Interaction Design</a>
+                                            <a href="https://github.com/lanan3969/MatchAlgorithm" target="_blank" rel="noopener noreferrer" className="text-amber-700 hover:text-amber-900 underline decoration-1 underline-offset-2 transition-colors duration-200">Information and Interaction Design</a>
                                         </h3>
                                         <p className="text-gray-500 text-sm mb-2">Sep 2025 - Jan 2026</p>
                                         <p className="text-gray-600 max-w-lg leading-relaxed text-sm">
@@ -578,7 +983,7 @@
                                         <h3 className="text-xl font-serif mb-3 text-black">Game Experience Designer</h3>
                                         <p className="text-gray-500 text-sm mb-2">NetEase ThunderFire Studio · Jul - Oct 2025</p>
                                         <p className="text-gray-600 max-w-lg leading-relaxed text-sm">
-                                            Focusing on player experience optimization and interaction design for AAA game titles.
+                                            Focusing on player experience optimization and interaction design for game PLANET PARTY TIME.
                                         </p>
                                     </div>
                                     <div>
@@ -613,10 +1018,10 @@
                                 transition={{ duration: 0.8, delay: 0.1 }}
                                 className="group border-b border-gray-300 py-20 flex flex-col md:flex-row gap-12 md:gap-32 items-start hover:bg-[#ebebe7] transition-colors duration-500 -mx-6 px-6 md:-mx-20 md:px-20"
                             >
-                                <div className="w-full md:w-1/3">
-                                    <span className="text-[8rem] md:text-[11rem] leading-[0.8] font-serif tracking-tight group-hover:italic transition-all duration-500 block">2024</span>
+                                <div className="w-full md:w-auto md:flex-shrink-0 overflow-visible">
+                                    <span className="text-[8rem] md:text-[11rem] leading-tight font-serif tracking-tight group-hover:italic transition-all duration-500 inline-block whitespace-nowrap pr-28 pb-4">2024</span>
                                 </div>
-                                <div className="w-full md:w-2/3 flex flex-col gap-8 pt-4">
+                                <div className="w-full md:flex-1 flex flex-col gap-8 pt-4">
                                     <div>
                                         <h3 className="text-xl font-serif mb-3 text-black">AIGC Video Project for Ministry of Education</h3>
                                         <p className="text-gray-500 text-sm mb-2">NEXT LAB, Zhejiang University × CCTV · Sep 2024 - Jan 2025</p>
@@ -642,10 +1047,10 @@
                                 transition={{ duration: 0.8, delay: 0.2 }}
                                 className="group border-b border-gray-300 py-20 flex flex-col md:flex-row gap-12 md:gap-32 items-start hover:bg-[#ebebe7] transition-colors duration-500 -mx-6 px-6 md:-mx-20 md:px-20"
                             >
-                                <div className="w-full md:w-1/3">
-                                    <span className="text-[8rem] md:text-[11rem] leading-[0.8] font-serif tracking-tight group-hover:italic transition-all duration-500 block">2023</span>
+                                <div className="w-full md:w-auto md:flex-shrink-0 overflow-visible">
+                                    <span className="text-[8rem] md:text-[11rem] leading-tight font-serif tracking-tight group-hover:italic transition-all duration-500 inline-block whitespace-nowrap pr-28 pb-4">2023</span>
                                 </div>
-                                <div className="w-full md:w-2/3 flex flex-col pt-4">
+                                <div className="w-full md:flex-1 flex flex-col pt-4">
                                     <h3 className="text-xl font-serif mb-3 text-black">Research on Humanoid Robots & AI</h3>
                                     <p className="text-gray-500 text-sm mb-2">Research Internship · Nov 2023 - May 2025</p>
                                     <p className="text-gray-600 max-w-lg leading-relaxed text-sm">
@@ -657,14 +1062,30 @@
                     </section>
 
                     {/* 个人简介 (Editorial Layout) */}
-                    <section id="about" className="px-6 md:px-20 py-32 bg-[#111] text-[#f9f9f9]">
-                        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+                    <section id="about" className="px-6 md:px-20 py-32 bg-[#111] text-[#f9f9f9] relative overflow-hidden">
+                        {/* 装饰性背景 */}
+                        <motion.div
+                            className="absolute -top-20 -left-20 w-96 h-96 bg-gradient-to-br from-gray-800 to-transparent rounded-full opacity-20 blur-3xl"
+                            animate={{ 
+                                x: [0, 50, 0],
+                                y: [0, 30, 0],
+                                scale: [1, 1.1, 1]
+                            }}
+                            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+                        />
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center relative z-10">
                             <div className="md:col-span-7">
                                 <motion.h2 
                                     initial={{ opacity: 0, x: -50 }}
                                     whileInView={{ opacity: 1, x: 0 }}
                                     viewport={{ once: true }}
+                                    transition={{ duration: 0.8 }}
                                     className="text-4xl md:text-7xl font-serif italic mb-8 leading-tight"
+                                    whileHover={{ 
+                                        scale: 1.02,
+                                        transition: { duration: 0.3 }
+                                    }}
                                 >
                                     Design is intelligence <br/> made visible.
                                 </motion.h2>
@@ -733,36 +1154,111 @@
                     </section>
 
                     {/* Footer / Contact */}
-                    <footer id="contact" className="px-6 md:px-20 py-24 bg-[#f9f9f9] relative">
-                        <div className="border-t border-black mb-12"></div>
+                    <footer id="contact" className="px-6 md:px-20 py-24 bg-[#f9f9f9] relative overflow-hidden">
+                        <motion.div 
+                            className="border-t border-black mb-12"
+                            initial={{ scaleX: 0 }}
+                            whileInView={{ scaleX: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1, ease: "easeInOut" }}
+                        />
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-end">
-                            <div>
-                                <h3 className="text-lg font-serif italic mb-4">Let's create something timeless.</h3>
-                                <a 
+                            <motion.div
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.8 }}
+                            >
+                                <motion.h3 
+                                    className="text-lg font-serif italic mb-4"
+                                    initial={{ opacity: 0 }}
+                                    whileInView={{ opacity: 1 }}
+                                    transition={{ delay: 0.2 }}
+                                >
+                                    Let's create something timeless.
+                                </motion.h3>
+                                <motion.a 
                                     href="mailto:yichenchen@zju.edu.cn" 
-                                    className="text-5xl md:text-8xl font-bold tracking-tighter hover:text-gray-500 transition-colors"
+                                    className="text-5xl md:text-8xl font-bold tracking-tighter hover:text-gray-500 transition-colors inline-block"
                                     onMouseEnter={textEnter}
                                     onMouseLeave={textLeave}
+                                    whileHover={{ 
+                                        scale: 1.05,
+                                        color: "#666",
+                                        transition: { duration: 0.3 }
+                                    }}
+                                    whileTap={{ scale: 0.95 }}
                                 >
                                     yichenchen@zju.edu.cn
-                                </a>
-                            </div>
-                            <div className="flex gap-6 mt-12 md:mt-0">
-                                <a href="#" className="p-3 border border-gray-300 rounded-full hover:bg-black hover:text-white transition-all" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+                                </motion.a>
+                            </motion.div>
+                            <motion.div 
+                                className="flex gap-6 mt-12 md:mt-0"
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.8, delay: 0.2 }}
+                            >
+                                <motion.a 
+                                    href="#" 
+                                    className="p-3 border border-gray-300 rounded-full hover:bg-black hover:text-white transition-all magnetic" 
+                                    onMouseEnter={textEnter} 
+                                    onMouseLeave={textLeave}
+                                    whileHover={{ 
+                                        scale: 1.2, 
+                                        rotate: 360,
+                                        backgroundColor: "#000",
+                                        color: "#fff",
+                                        transition: { duration: 0.4 }
+                                    }}
+                                    whileTap={{ scale: 0.9 }}
+                                >
                                     <Instagram size={20} />
-                                </a>
-                                <a href="#" className="p-3 border border-gray-300 rounded-full hover:bg-black hover:text-white transition-all" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+                                </motion.a>
+                                <motion.a 
+                                    href="#" 
+                                    className="p-3 border border-gray-300 rounded-full hover:bg-black hover:text-white transition-all magnetic" 
+                                    onMouseEnter={textEnter} 
+                                    onMouseLeave={textLeave}
+                                    whileHover={{ 
+                                        scale: 1.2, 
+                                        rotate: 360,
+                                        backgroundColor: "#000",
+                                        color: "#fff",
+                                        transition: { duration: 0.4 }
+                                    }}
+                                    whileTap={{ scale: 0.9 }}
+                                >
                                     <Linkedin size={20} />
-                                </a>
-                                <a href="#" className="p-3 border border-gray-300 rounded-full hover:bg-black hover:text-white transition-all" onMouseEnter={textEnter} onMouseLeave={textLeave}>
+                                </motion.a>
+                                <motion.a 
+                                    href="#" 
+                                    className="p-3 border border-gray-300 rounded-full hover:bg-black hover:text-white transition-all magnetic" 
+                                    onMouseEnter={textEnter} 
+                                    onMouseLeave={textLeave}
+                                    whileHover={{ 
+                                        scale: 1.2, 
+                                        rotate: 360,
+                                        backgroundColor: "#000",
+                                        color: "#fff",
+                                        transition: { duration: 0.4 }
+                                    }}
+                                    whileTap={{ scale: 0.9 }}
+                                >
                                     <Mail size={20} />
-                                </a>
-                            </div>
+                                </motion.a>
+                            </motion.div>
                         </div>
-                        <div className="mt-20 flex justify-between text-xs text-gray-500 uppercase tracking-widest">
+                        <motion.div 
+                            className="mt-20 flex justify-between text-xs text-gray-500 uppercase tracking-widest"
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8, delay: 0.4 }}
+                        >
                             <span>© 2026 Yichen Chen</span>
                             <span>Hangzhou / World</span>
-                        </div>
+                        </motion.div>
                     </footer>
                 </div>
             );
